@@ -6,7 +6,6 @@ import android.content.Context
 
 class QuoteApplication : Application() {
 
-
     companion object {
 
         @SuppressLint("StaticFieldLeak")
@@ -23,6 +22,5 @@ class QuoteApplication : Application() {
         context = applicationContext
         instance = this
     }
-
 
 }

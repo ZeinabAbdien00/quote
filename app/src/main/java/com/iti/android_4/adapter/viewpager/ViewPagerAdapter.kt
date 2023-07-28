@@ -6,14 +6,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.iti.android_4.ui.saved.SavedQuotesFragment
 import com.iti.android_4.ui.search.SearchQuoteFragment
-import com.iti.android_4.ui.today.TodayQuoteFragment
 import com.iti.android_4.ui.setting.SettingFragment
+import com.iti.android_4.ui.today.TodayQuoteFragment
 
-class ViewPagerAdapter(fragmentManager: FragmentManager,lifecycle: Lifecycle) :
+class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
     override fun getItemCount(): Int {
-        return  4
+        return 4
     }
 
     override fun createFragment(position: Int): Fragment {

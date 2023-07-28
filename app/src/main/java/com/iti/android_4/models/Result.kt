@@ -2,7 +2,6 @@ package com.iti.android_4.models
 
 import androidx.annotation.Keep
 
-
 @Keep
 data class Result(
     val _id: String,

@@ -31,7 +31,6 @@ class SavedQuotesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("suz", "2")
 
         observation()
 
@@ -40,17 +39,16 @@ class SavedQuotesFragment : Fragment() {
 
     private fun observation() {
         viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {
-            Log.d("suz", "22222222222")
 
-            if (it != null) {
-                viewModel.getRetrofitQuotes()
-                try {
-                    binding.tvvvvvv.text = it[0].quote.toString()
-
-                } catch (e: Exception) {
-                    binding.tvvvvvv.text = "nothing"
-                }
-            }
+//            if (it != null) {
+//                viewModel.getRetrofitQuotes()
+//                try {
+//                    binding.tvvvvvv.text = it[0].quote.toString()
+//
+//                } catch (e: Exception) {
+//                    binding.tvvvvvv.text = "nothing"
+//                }
+//            }
         })
     }
 

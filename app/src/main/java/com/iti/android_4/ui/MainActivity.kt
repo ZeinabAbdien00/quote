@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setUpViewPAger()
+        setUpViewPager()
         setupNavigation()
         onClicks()
         swipeBottomNavigationWhenViewPagerChanged()
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUpViewPAger() {
+    private fun setUpViewPager() {
         adapter = ViewPagerAdapter(supportFragmentManager, lifecycle)
         binding.viewPager.adapter = adapter
     }

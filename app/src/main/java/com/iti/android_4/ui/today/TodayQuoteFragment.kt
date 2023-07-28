@@ -1,6 +1,5 @@
 package com.iti.android_4.ui.today
 
-import android.app.Application
 import android.content.*
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,7 +17,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 class TodayQuoteFragment : Fragment() {
 
     private lateinit var binding: FragmentTodayQuoteBinding
@@ -35,7 +33,7 @@ class TodayQuoteFragment : Fragment() {
 
         binding = FragmentTodayQuoteBinding.inflate(layoutInflater)
         repository = BaseRepository()
-        viewModel = TodayQuotesViewModel(Application(), repository)
+        viewModel = TodayQuotesViewModel(repository)
         sharedPreferences = activity!!.getSharedPreferences("MyShared", Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
 

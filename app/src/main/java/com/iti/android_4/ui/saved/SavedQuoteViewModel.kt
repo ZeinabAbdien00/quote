@@ -27,7 +27,7 @@ class SavedQuoteViewModel(
 
     }
 
-    suspend fun deleteQuote(quote: String , author :String){
+    suspend fun deleteQuote(quote: String, author: String) {
         savedRepository.deleteQuotes(quote = quote, author = author)
     }
 

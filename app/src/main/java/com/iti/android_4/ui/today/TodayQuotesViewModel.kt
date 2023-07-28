@@ -14,7 +14,6 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class TodayQuotesViewModel(
-    app: Application,
     private val todayRepository: BaseRepository
 ) : ViewModel() {
 
@@ -41,11 +40,11 @@ class TodayQuotesViewModel(
         })
     }
 
-    suspend fun newQuote(newQuotes: SavedQuoteLocalDataModel){
+    suspend fun newQuote(newQuotes: SavedQuoteLocalDataModel) {
         todayRepository.insertNewQuotes(newQuotes)
     }
 
-    suspend fun deleteQuote(quote: String , author :String){
+    suspend fun deleteQuote(quote: String, author: String) {
         todayRepository.deleteQuotes(quote = quote, author = author)
     }
 
