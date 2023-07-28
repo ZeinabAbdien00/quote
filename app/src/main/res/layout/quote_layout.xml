@@ -67,9 +67,9 @@
         android:backgroundTint="@color/gray"
         android:src="@drawable/ic_arrow_back"
         app:borderWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_favorite"
-        app:layout_constraintStart_toStartOf="@id/tv_quote_content"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="@id/tv_quote_content" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_favorite"
