@@ -13,6 +13,7 @@ import com.iti.android_4.R
 import com.iti.android_4.databinding.FragmentTodayQuoteBinding
 import com.iti.android_4.models.Quotes
 import com.iti.android_4.models.saved.SavedQuoteLocalDataModel
+import com.iti.android_4.ui.BaseRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class TodayQuoteFragment : Fragment() {
 
     private lateinit var binding: FragmentTodayQuoteBinding
     private lateinit var viewModel: TodayQuotesViewModel
-    private lateinit var repository: TodayQuotesRepository
+    private lateinit var repository: BaseRepository
     private var toggle: Boolean = true
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
@@ -33,7 +34,7 @@ class TodayQuoteFragment : Fragment() {
     ): View {
 
         binding = FragmentTodayQuoteBinding.inflate(layoutInflater)
-        repository = TodayQuotesRepository()
+        repository = BaseRepository()
         viewModel = TodayQuotesViewModel(Application(), repository)
         sharedPreferences = activity!!.getSharedPreferences("MyShared", Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
