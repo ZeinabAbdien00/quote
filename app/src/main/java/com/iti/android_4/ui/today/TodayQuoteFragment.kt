@@ -114,7 +114,7 @@ class TodayQuoteFragment : Fragment() {
 
                 val sharingIntent = Intent(Intent.ACTION_SEND)
                 sharingIntent.type = "text/plain"
-                sharingIntent.putExtra(Intent.EXTRA_TEXT, "This is the text to share")
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, tvQuoteContent.text.toString())
 
                 startActivity(Intent.createChooser(sharingIntent, "Share text via"))
             }
@@ -137,9 +137,9 @@ class TodayQuoteFragment : Fragment() {
                 tvQuoteContent.text = response!!.results[quoteId].content.toString()
                 tvAuthor.text = response.results[quoteId].author.toString()
 
-                if (quoteId == response.results.size-1){
+                if (quoteId == response.results.size - 1) {
                     btnNext.isClickable = false
-                }else{
+                } else {
                     btnPrevious.isClickable = true
                     quoteId++
                 }
@@ -148,9 +148,9 @@ class TodayQuoteFragment : Fragment() {
                 tvQuoteContent.text = response!!.results[quoteId].content.toString()
                 tvAuthor.text = response.results[quoteId].author.toString()
 
-                if (quoteId == 0){
+                if (quoteId == 0) {
                     btnPrevious.isClickable = false
-                }else{
+                } else {
                     btnNext.isClickable = true
                     quoteId--
                 }
