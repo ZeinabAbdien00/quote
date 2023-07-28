@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.android_4.models.Quotes
 import com.iti.android_4.models.saved.SavedQuoteLocalDataModel
+import com.iti.android_4.ui.BaseRepository
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,18 +15,18 @@ import retrofit2.Response
 
 class TodayQuotesViewModel(
     app: Application,
-    private val newsRepository: TodayQuotesRepository
+    private val todayRepository: BaseRepository
 ) : ViewModel() {
 
     val quotes: MutableLiveData<Quotes> = MutableLiveData()
 
-    fun getBreakingNews() = viewModelScope.launch {
+    fun getQuotes() = viewModelScope.launch {
         safeQuotesCall()
     }
 
     private fun safeQuotesCall() {
 
-        val call = newsRepository.getQuotes()
+        val call = todayRepository.getRetrofitQuotes()
         call.enqueue(object : Callback<Quotes> {
             override fun onResponse(
                 call: Call<Quotes>,
@@ -41,7 +42,11 @@ class TodayQuotesViewModel(
     }
 
     suspend fun newQuote(newQuotes: SavedQuoteLocalDataModel){
-        newsRepository.insertNewQuotes(newQuotes)
+        todayRepository.insertNewQuotes(newQuotes)
+    }
+
+    suspend fun deleteQuote(quote: String , author :String){
+        todayRepository.deleteQuotes(quote = quote, author = author)
     }
 
 }
