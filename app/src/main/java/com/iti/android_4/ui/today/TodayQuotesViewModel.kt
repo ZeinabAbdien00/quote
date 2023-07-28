@@ -19,7 +19,7 @@ class TodayQuotesViewModel(
 
     val quotes: MutableLiveData<Quotes> = MutableLiveData()
 
-    fun getBreakingNews() = viewModelScope.launch {
+    fun getQuotes() = viewModelScope.launch {
         safeQuotesCall()
     }
 
@@ -42,6 +42,10 @@ class TodayQuotesViewModel(
 
     suspend fun newQuote(newQuotes: SavedQuoteLocalDataModel){
         newsRepository.insertNewQuotes(newQuotes)
+    }
+
+    suspend fun deleteQuote(quote: String , author :String){
+        newsRepository.deleteQuotes(quote = quote, author = author)
     }
 
 }
