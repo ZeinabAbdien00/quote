@@ -2,6 +2,7 @@ package com.iti.android_4.ui.today
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -63,7 +64,6 @@ class TodayQuoteFragment : Fragment() {
 
         }
     }
-
     private fun observation() {
         viewModel.getBreakingNews()
         viewModel.quotes.observe(viewLifecycleOwner, Observer { response ->
@@ -112,6 +112,16 @@ class TodayQuoteFragment : Fragment() {
                     !toggle
                 }
             }
+
+            btnShare.setOnClickListener {
+
+                val sharingIntent = Intent(Intent.ACTION_SEND)
+                sharingIntent.type = "text/plain"
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, "This is the text to share")
+
+                startActivity(Intent.createChooser(sharingIntent, "Share text via"))
+            }
+
         }
     }
 
