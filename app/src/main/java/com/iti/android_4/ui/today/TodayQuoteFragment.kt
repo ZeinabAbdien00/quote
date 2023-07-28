@@ -1,6 +1,7 @@
 package com.iti.android_4.ui.today
 
 import android.app.Application
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,6 +10,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.content.ClipboardManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
@@ -120,6 +124,20 @@ class TodayQuoteFragment : Fragment() {
                 sharingIntent.putExtra(Intent.EXTRA_TEXT, "This is the text to share")
 
                 startActivity(Intent.createChooser(sharingIntent, "Share text via"))
+            }
+
+            btnCopy.setOnClickListener {
+
+                if(tvQuoteContent.text.toString().isEmpty()){
+                    Toast.makeText(requireContext() , "There is no text" , Toast.LENGTH_SHORT).show()
+                }else{
+                    val clipboardManager = activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData = ClipData.newPlainText("Data " , tvQuoteContent.text.toString())
+                    clipboardManager.setPrimaryClip(clipData)
+                    Toast.makeText(requireContext() , "Text copied to Clipboard" , Toast.LENGTH_SHORT).show()
+                }
+
+
             }
 
         }
