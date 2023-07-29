@@ -75,7 +75,7 @@ class TodayQuoteFragment : Fragment() {
 
     private fun onClickToSaveFavorite(response: Quotes?) {
 
-        var quoteId = 0
+        var quoteId = 1
 
         binding.todayLayout.apply {
             btnFavorite.setOnClickListener {
