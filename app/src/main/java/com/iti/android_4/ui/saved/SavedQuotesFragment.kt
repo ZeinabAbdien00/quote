@@ -7,7 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.iti.android_4.adapter.save_quote.SaveQuoteRVAdapter
 import com.iti.android_4.databinding.FragmentSavedQuotesBinding
+import com.iti.android_4.models.saved.SavedQuoteLocalDataModel
 import com.iti.android_4.ui.BaseRepository
 
 
@@ -15,6 +19,7 @@ class SavedQuotesFragment : Fragment() {
     private lateinit var binding: FragmentSavedQuotesBinding
     private lateinit var viewModel: SavedQuoteViewModel
     private lateinit var repository: BaseRepository
+    private lateinit var savedAdapter: SaveQuoteRVAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,7 +30,6 @@ class SavedQuotesFragment : Fragment() {
         viewModel = SavedQuoteViewModel(repository)
         Log.d("suz", "1")
 
-        viewModel.getRetrofitQuotes()
         return binding.root
     }
 
@@ -38,18 +42,28 @@ class SavedQuotesFragment : Fragment() {
 
 
     private fun observation() {
+        viewModel.getSavedQuotes()
         viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                setupRecyclerView(it)
 
-//            if (it != null) {
-//                viewModel.getRetrofitQuotes()
-//                try {
-//                    binding.tvvvvvv.text = it[0].quote.toString()
-//
-//                } catch (e: Exception) {
-//                    binding.tvvvvvv.text = "nothing"
-//                }
-//            }
+            }
         })
+    }
+
+    private fun setupRecyclerView(savedQuoteList: List<SavedQuoteLocalDataModel>) {
+        binding.rvSavedQuotes.apply {
+
+            val savedData = savedQuoteList as ArrayList<SavedQuoteLocalDataModel>
+            savedAdapter =
+                SaveQuoteRVAdapter(savedData)
+
+            val messageLayoutManager =
+                LinearLayoutManager(requireContext(), GridLayoutManager.VERTICAL, false)
+
+            layoutManager = messageLayoutManager
+            adapter = savedAdapter
+        }
     }
 
 }

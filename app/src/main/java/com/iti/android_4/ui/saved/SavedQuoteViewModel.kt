@@ -14,7 +14,7 @@ class SavedQuoteViewModel(
     private val _savedQuotes: MutableLiveData<List<SavedQuoteLocalDataModel>> = MutableLiveData()
     val savedQuotes: MutableLiveData<List<SavedQuoteLocalDataModel>> = _savedQuotes
 
-    fun getRetrofitQuotes() {
+    fun getSavedQuotes() {
         viewModelScope.launch {
             savedQuotes()
         }

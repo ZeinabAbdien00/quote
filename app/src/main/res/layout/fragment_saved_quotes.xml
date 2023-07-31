@@ -7,14 +7,16 @@
     tools:context=".ui.saved.SavedQuotesFragment">
 
 
-    <TextView
-        android:id="@+id/tvvvvvv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/saved"
-        android:textSize="30sp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_saved_quotes"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:listitem="@layout/save_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

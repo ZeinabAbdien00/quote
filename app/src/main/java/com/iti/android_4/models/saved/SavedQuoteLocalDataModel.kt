@@ -14,6 +14,9 @@ data class SavedQuoteLocalDataModel(
     val quote: String,
 
     @ColumnInfo(name = "author")
-    val author: String
+    val author: String,
+
+    @ColumnInfo(name = "date")
+    val date: String
 
 )

@@ -1,13 +1,16 @@
 package com.iti.android_4.ui
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.iti.android_4.R
 import com.iti.android_4.adapter.viewpager.ViewPagerAdapter
 import com.iti.android_4.databinding.ActivityMainBinding
 
@@ -35,15 +38,15 @@ class MainActivity : AppCompatActivity() {
     private fun swipeViewPagerWhenBottomNavigationChanged() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
-                com.iti.android_4.R.id.home -> {
+                R.id.home -> {
                     binding.viewPager.currentItem = 0
                     return@setOnNavigationItemSelectedListener true
                 }
-                com.iti.android_4.R.id.yesterday -> {
+                R.id.yesterday -> {
                     binding.viewPager.currentItem = 3
                     return@setOnNavigationItemSelectedListener true
                 }
-                com.iti.android_4.R.id.search -> {
+                R.id.search -> {
                     binding.viewPager.currentItem = 1
                     return@setOnNavigationItemSelectedListener true
                 }
@@ -60,10 +63,10 @@ class MainActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 val menu: Menu = bottomNavigationView.menu
                 when (position) {
-                    0 -> menu.findItem(com.iti.android_4.R.id.home).isChecked = true
-                    1 -> menu.findItem(com.iti.android_4.R.id.search).isChecked = true
-                    2 -> menu.findItem(com.iti.android_4.R.id.saved).isChecked = true
-                    else -> menu.findItem(com.iti.android_4.R.id.yesterday).isChecked = true
+                    0 -> menu.findItem(R.id.home).isChecked = true
+                    1 -> menu.findItem(R.id.search).isChecked = true
+                    2 -> menu.findItem(R.id.saved).isChecked = true
+                    else -> menu.findItem(R.id.yesterday).isChecked = true
                 }
             }
         })
@@ -83,9 +86,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupNavigation() {
         navHostFragment =
-            supportFragmentManager.findFragmentById(com.iti.android_4.R.id.nav_host_fragment) as NavHostFragment
-        bottomNavigationView = findViewById(com.iti.android_4.R.id.navigation_view)
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        bottomNavigationView = findViewById(R.id.navigation_view)
         NavigationUI.setupWithNavController(bottomNavigationView, navHostFragment.navController)
+
+        val colorStateList = ColorStateList.valueOf(resources.getColor(R.color.white))
+//        bottomNavigationView.itemIconTintList = colorStateList
+
+        bottomNavigationView.itemIconTintList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(colorStateList.defaultColor, ContextCompat.getColor(this, R.color.gray))
+        )
+
+
     }
 
 }
