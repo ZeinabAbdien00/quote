@@ -1,11 +1,13 @@
 package com.iti.android_4.ui.today
 
 import android.content.*
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.iti.android_4.R
@@ -26,6 +28,9 @@ class TodayQuoteFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
 
+    private lateinit var data: Quotes
+    var quoteId = 1
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,119 +47,174 @@ class TodayQuoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        init()
         observation()
-
     }
 
     private fun init() {
-        toggle = if (sharedPreferences.getBoolean("favorite", false)) {
-            binding.todayLayout.btnFavorite.setImageResource(R.drawable.ic_favorite)
-            false
-        } else {
-            binding.todayLayout.btnFavorite.setImageResource(R.drawable.ic_favorite_border)
-            true
+        binding.todayLayout.apply {
+            toggle =
+                if (binding.todayLayout.tvQuoteContent.text.toString() == sharedPreferences.getString(
+                        "favorite",
+                        ""
+                    ).toString()
+                ) {
+                    //binding.todayLayout.btnFavorite.setImageResource(R.drawable.ic_favorite)
 
+                    val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
+                    drawable?.setColorFilter(ContextCompat.getColor(requireContext(), R.color.base), PorterDuff.Mode.SRC_IN)
+                    binding.todayLayout.btnFavorite.setImageDrawable(drawable)
+
+
+                    false
+                } else {
+                    binding.todayLayout.btnFavorite.setImageResource(R.drawable.ic_favorite_border)
+                    true
+                }
         }
     }
 
     private fun observation() {
+
         viewModel.getQuotes()
         viewModel.quotes.observe(viewLifecycleOwner, Observer { response ->
-            if (response != null) {
-                binding.todayLayout.tvQuoteContent.text =
-                    response.results[0].content.toString()
-                binding.todayLayout.tvAuthor.text =
-                    response.results[0].author.toString()
-            }
+            data = response
+            initialData()
+            init()
             onClickToSaveFavorite(response)
-
         })
+    }
+
+    private fun initialData() {
+        binding.todayLayout.tvQuoteContent.text =
+            data.results[0].content
+        binding.todayLayout.tvAuthor.text =
+            data.results[0].author
+        binding.todayLayout.tvDate.text =
+            data.results[0].dateModified
     }
 
     private fun onClickToSaveFavorite(response: Quotes?) {
 
-        var quoteId = 1
 
         binding.todayLayout.apply {
             btnFavorite.setOnClickListener {
-                toggle = if (!toggle) {
-                    btnFavorite.setImageResource(R.drawable.ic_favorite_border)
-
-                    CoroutineScope(Dispatchers.Main).launch {
-
-                        viewModel.deleteQuote(
-                            quote = tvQuoteContent.text.toString(),
-                            author = tvAuthor.text.toString()
-                        )
-                    }
-                    Toast.makeText(requireContext(), "Removed From Favorite", Toast.LENGTH_SHORT)
-                        .show()
-                    !toggle
-                } else {
-                    btnFavorite.setImageResource(R.drawable.ic_favorite)
-                    CoroutineScope(Dispatchers.Main).launch {
-                        viewModel.newQuote(
-                            SavedQuoteLocalDataModel(
-                                quote = tvQuoteContent.text.toString(),
-                                author = tvAuthor.text.toString(),
-                            )
-                        )
-                    }
-                    Toast.makeText(requireContext(), "Saved To Favorite", Toast.LENGTH_SHORT).show()
-                    editor.putBoolean("favorite", toggle)
-                    editor.apply()
-                    !toggle
-                }
+                toggle = if (!toggle) removeFromFav() else addToFav()
             }
 
             btnShare.setOnClickListener {
-
-                val sharingIntent = Intent(Intent.ACTION_SEND)
-                sharingIntent.type = "text/plain"
-                sharingIntent.putExtra(Intent.EXTRA_TEXT, tvQuoteContent.text.toString())
-
-                startActivity(Intent.createChooser(sharingIntent, "Share text via"))
+                shareQuote()
             }
 
             btnCopy.setOnClickListener {
-
-                if (tvQuoteContent.text.toString().isEmpty()) {
-                    Toast.makeText(requireContext(), "There is no text", Toast.LENGTH_SHORT).show()
-                } else {
-                    val clipboardManager =
-                        activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clipData = ClipData.newPlainText("Data ", tvQuoteContent.text.toString())
-                    clipboardManager.setPrimaryClip(clipData)
-                    Toast.makeText(requireContext(), "Text copied to Clipboard", Toast.LENGTH_SHORT)
-                        .show()
-                }
+                copyQuote()
             }
 
             btnNext.setOnClickListener {
-                tvQuoteContent.text = response!!.results[quoteId].content.toString()
-                tvAuthor.text = response.results[quoteId].author.toString()
-
-                if (quoteId == response.results.size - 1) {
-                    btnNext.isClickable = false
-                } else {
-                    btnPrevious.isClickable = true
-                    quoteId++
-                }
+                nextQuote()
             }
             btnPrevious.setOnClickListener {
-                tvQuoteContent.text = response!!.results[quoteId].content.toString()
-                tvAuthor.text = response.results[quoteId].author.toString()
-
-                if (quoteId == 0) {
-                    btnPrevious.isClickable = false
-                } else {
-                    btnNext.isClickable = true
-                    quoteId--
-                }
+                previousQuote()
             }
         }
     }
 
+    private fun addToFav(): Boolean {
+
+        binding.todayLayout.apply {
+//            btnFavorite.setImageResource(R.drawable.ic_favorite)
+
+            val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
+            drawable?.setColorFilter(ContextCompat.getColor(requireContext(), R.color.base), PorterDuff.Mode.SRC_IN)
+            binding.todayLayout.btnFavorite.setImageDrawable(drawable)
+
+
+
+            CoroutineScope(Dispatchers.Main).launch {
+                viewModel.newQuote(
+                    SavedQuoteLocalDataModel(
+                        quote = tvQuoteContent.text.toString(),
+                        author = tvAuthor.text.toString(),
+                    )
+                )
+            }
+            editor.putString("favorite", tvQuoteContent.text.toString())
+            editor.apply()
+
+            Toast.makeText(requireContext(), "Saved To Favorite", Toast.LENGTH_SHORT).show()
+            return !toggle
+        }
+    }
+
+    private fun removeFromFav(): Boolean {
+        binding.todayLayout.apply {
+
+            btnFavorite.setImageResource(R.drawable.ic_favorite_border)
+            CoroutineScope(Dispatchers.Main).launch {
+                viewModel.deleteQuote(
+                    quote = tvQuoteContent.text.toString(),
+                    author = tvAuthor.text.toString()
+                )
+            }
+            Toast.makeText(requireContext(), "Removed From Favorite", Toast.LENGTH_SHORT)
+                .show()
+            return !toggle
+
+        }
+    }
+
+    private fun shareQuote() {
+        binding.todayLayout.apply {
+            val sharingIntent = Intent(Intent.ACTION_SEND)
+            sharingIntent.type = "text/plain"
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, tvQuoteContent.text.toString())
+
+            startActivity(Intent.createChooser(sharingIntent, "Share text via"))
+        }
+    }
+
+    private fun copyQuote() {
+        binding.todayLayout.apply {
+            if (tvQuoteContent.text.toString().isEmpty()) {
+                Toast.makeText(requireContext(), "There is no text", Toast.LENGTH_SHORT).show()
+            } else {
+                val clipboardManager =
+                    activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipData = ClipData.newPlainText("Data ", tvQuoteContent.text.toString())
+                clipboardManager.setPrimaryClip(clipData)
+                Toast.makeText(requireContext(), "Text copied to Clipboard", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+    private fun previousQuote() {
+        binding.todayLayout.apply {
+            tvQuoteContent.text = data.results[quoteId].content.toString()
+            tvAuthor.text = data.results[quoteId].author.toString()
+            tvDate.text = data.results[quoteId].dateModified.toString()
+
+            if (quoteId == 0) {
+                btnPrevious.isClickable = false
+            } else {
+                btnNext.isClickable = true
+                quoteId--
+            }
+            init()
+        }
+    }
+
+    private fun nextQuote() {
+        binding.todayLayout.apply {
+            tvQuoteContent.text = data.results[quoteId].content.toString()
+            tvAuthor.text = data.results[quoteId].author.toString()
+
+            if (quoteId == data.results.size - 1) {
+                btnNext.isClickable = false
+            } else {
+                btnPrevious.isClickable = true
+                quoteId++
+            }
+            init()
+        }
+    }
 }
