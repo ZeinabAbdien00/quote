@@ -14,5 +14,5 @@
     <color name="pink">#FFFF00FF</color>
     <color name="cyan">#FF00FFFF</color>
     <color name="gray">#BEBFBF</color>
-    <color name="pink_">#EF8AB2</color>
+    <color name="base">#EF8AB2</color>
 </resources>
