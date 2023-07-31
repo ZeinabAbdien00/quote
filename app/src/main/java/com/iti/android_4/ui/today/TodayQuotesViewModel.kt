@@ -48,4 +48,17 @@ class TodayQuotesViewModel(
         todayRepository.deleteQuotes(quote = quote, author = author)
     }
 
+    private val _savedQuotes: MutableLiveData<List<SavedQuoteLocalDataModel>> = MutableLiveData()
+    val savedQuotes: MutableLiveData<List<SavedQuoteLocalDataModel>> = _savedQuotes
+
+    fun getSavedQuotes() {
+        viewModelScope.launch {
+            savedQuotes()
+        }
+    }
+
+    private suspend fun savedQuotes() {
+        _savedQuotes.value = todayRepository.getSavedQuotes()
+    }
+
 }

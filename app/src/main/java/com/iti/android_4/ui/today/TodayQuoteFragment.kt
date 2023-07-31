@@ -29,6 +29,7 @@ class TodayQuoteFragment : Fragment() {
     private lateinit var editor: SharedPreferences.Editor
 
     private lateinit var data: Quotes
+    private lateinit var savedQuotes: List<SavedQuoteLocalDataModel>
     var quoteId = 1
 
     override fun onCreateView(
@@ -50,24 +51,20 @@ class TodayQuoteFragment : Fragment() {
         observation()
     }
 
-    private fun init() {
+    private fun init(position: Int) {
         binding.todayLayout.apply {
             toggle =
-                if (binding.todayLayout.tvQuoteContent.text.toString() == sharedPreferences.getString(
-                        "favorite",
-                        ""
-                    ).toString()
-                ) {
-                    //binding.todayLayout.btnFavorite.setImageResource(R.drawable.ic_favorite)
-
-                    val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
-                    drawable?.setColorFilter(ContextCompat.getColor(requireContext(), R.color.base), PorterDuff.Mode.SRC_IN)
-                    binding.todayLayout.btnFavorite.setImageDrawable(drawable)
-
-
+                if (tvQuoteContent.text.toString() == savedQuotes[position].quote) {
+                    val drawable =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
+                    drawable?.setColorFilter(
+                        ContextCompat.getColor(requireContext(), R.color.base),
+                        PorterDuff.Mode.SRC_IN
+                    )
+                    btnFavorite.setImageDrawable(drawable)
                     false
                 } else {
-                    binding.todayLayout.btnFavorite.setImageResource(R.drawable.ic_favorite_border)
+                    btnFavorite.setImageResource(R.drawable.ic_favorite_border)
                     true
                 }
         }
@@ -76,11 +73,17 @@ class TodayQuoteFragment : Fragment() {
     private fun observation() {
 
         viewModel.getQuotes()
+        viewModel.getSavedQuotes()
         viewModel.quotes.observe(viewLifecycleOwner, Observer { response ->
             data = response
             initialData()
-            init()
             onClickToSaveFavorite(response)
+        })
+        viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                savedQuotes = it
+                init(0)
+            }
         })
     }
 
@@ -91,10 +94,10 @@ class TodayQuoteFragment : Fragment() {
             data.results[0].author
         binding.todayLayout.tvDate.text =
             data.results[0].dateModified
+        init(0)
     }
 
     private fun onClickToSaveFavorite(response: Quotes?) {
-
 
         binding.todayLayout.apply {
             btnFavorite.setOnClickListener {
@@ -121,10 +124,12 @@ class TodayQuoteFragment : Fragment() {
     private fun addToFav(): Boolean {
 
         binding.todayLayout.apply {
-//            btnFavorite.setImageResource(R.drawable.ic_favorite)
 
             val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
-            drawable?.setColorFilter(ContextCompat.getColor(requireContext(), R.color.base), PorterDuff.Mode.SRC_IN)
+            drawable?.setColorFilter(
+                ContextCompat.getColor(requireContext(), R.color.base),
+                PorterDuff.Mode.SRC_IN
+            )
             binding.todayLayout.btnFavorite.setImageDrawable(drawable)
 
 
@@ -134,6 +139,7 @@ class TodayQuoteFragment : Fragment() {
                     SavedQuoteLocalDataModel(
                         quote = tvQuoteContent.text.toString(),
                         author = tvAuthor.text.toString(),
+                        date = tvDate.text.toString(),
                     )
                 )
             }
@@ -152,7 +158,7 @@ class TodayQuoteFragment : Fragment() {
             CoroutineScope(Dispatchers.Main).launch {
                 viewModel.deleteQuote(
                     quote = tvQuoteContent.text.toString(),
-                    author = tvAuthor.text.toString()
+                    author = tvAuthor.text.toString(),
                 )
             }
             Toast.makeText(requireContext(), "Removed From Favorite", Toast.LENGTH_SHORT)
@@ -192,14 +198,13 @@ class TodayQuoteFragment : Fragment() {
             tvQuoteContent.text = data.results[quoteId].content.toString()
             tvAuthor.text = data.results[quoteId].author.toString()
             tvDate.text = data.results[quoteId].dateModified.toString()
-
             if (quoteId == 0) {
                 btnPrevious.isClickable = false
             } else {
                 btnNext.isClickable = true
                 quoteId--
             }
-            init()
+
         }
     }
 
@@ -207,14 +212,13 @@ class TodayQuoteFragment : Fragment() {
         binding.todayLayout.apply {
             tvQuoteContent.text = data.results[quoteId].content.toString()
             tvAuthor.text = data.results[quoteId].author.toString()
-
+            init(quoteId)
             if (quoteId == data.results.size - 1) {
                 btnNext.isClickable = false
             } else {
                 btnPrevious.isClickable = true
                 quoteId++
             }
-            init()
         }
     }
 }
