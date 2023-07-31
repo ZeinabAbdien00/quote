@@ -3,6 +3,7 @@ package com.iti.android_4.ui.today
 import android.content.*
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +43,6 @@ class TodayQuoteFragment : Fragment() {
         viewModel = TodayQuotesViewModel(repository)
         sharedPreferences = activity!!.getSharedPreferences("MyShared", Context.MODE_PRIVATE)
         editor = sharedPreferences.edit()
-
         return binding.root
     }
 
@@ -51,22 +51,32 @@ class TodayQuoteFragment : Fragment() {
         observation()
     }
 
-    private fun init(position: Int) {
-        binding.todayLayout.apply {
-            toggle =
-                if (tvQuoteContent.text.toString() == savedQuotes[position].quote) {
-                    val drawable =
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
-                    drawable?.setColorFilter(
-                        ContextCompat.getColor(requireContext(), R.color.base),
-                        PorterDuff.Mode.SRC_IN
-                    )
-                    btnFavorite.setImageDrawable(drawable)
-                    false
-                } else {
-                    btnFavorite.setImageResource(R.drawable.ic_favorite_border)
-                    true
-                }
+    private fun init() {
+        viewModel.getSavedQuotes()
+        if (savedQuotes.isNotEmpty()) {
+            binding.todayLayout.apply {
+                toggle =
+                    if (savedQuotes.contains(
+                            SavedQuoteLocalDataModel(
+                                quote = tvQuoteContent.text.toString(),
+                                author = tvAuthor.text.toString(),
+                                date = tvDate.text.toString()
+                            )
+                        )
+                    ) {
+                        val drawable =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
+                        drawable?.setColorFilter(
+                            ContextCompat.getColor(requireContext(), R.color.base),
+                            PorterDuff.Mode.SRC_IN
+                        )
+                        btnFavorite.setImageDrawable(drawable)
+                        false
+                    } else {
+                        btnFavorite.setImageResource(R.drawable.ic_favorite_border)
+                        true
+                    }
+            }
         }
     }
 
@@ -74,6 +84,7 @@ class TodayQuoteFragment : Fragment() {
 
         viewModel.getQuotes()
         viewModel.getSavedQuotes()
+
         viewModel.quotes.observe(viewLifecycleOwner, Observer { response ->
             data = response
             initialData()
@@ -82,7 +93,7 @@ class TodayQuoteFragment : Fragment() {
         viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 savedQuotes = it
-                init(0)
+                init()
             }
         })
     }
@@ -94,7 +105,7 @@ class TodayQuoteFragment : Fragment() {
             data.results[0].author
         binding.todayLayout.tvDate.text =
             data.results[0].dateModified
-        init(0)
+        init()
     }
 
     private fun onClickToSaveFavorite(response: Quotes?) {
@@ -195,9 +206,10 @@ class TodayQuoteFragment : Fragment() {
 
     private fun previousQuote() {
         binding.todayLayout.apply {
-            tvQuoteContent.text = data.results[quoteId].content.toString()
-            tvAuthor.text = data.results[quoteId].author.toString()
-            tvDate.text = data.results[quoteId].dateModified.toString()
+            tvQuoteContent.text = data.results[quoteId].content
+            tvAuthor.text = data.results[quoteId].author
+            tvDate.text = data.results[quoteId].dateModified
+            init()
             if (quoteId == 0) {
                 btnPrevious.isClickable = false
             } else {
@@ -210,9 +222,9 @@ class TodayQuoteFragment : Fragment() {
 
     private fun nextQuote() {
         binding.todayLayout.apply {
-            tvQuoteContent.text = data.results[quoteId].content.toString()
-            tvAuthor.text = data.results[quoteId].author.toString()
-            init(quoteId)
+            tvQuoteContent.text = data.results[quoteId].content
+            tvAuthor.text = data.results[quoteId].author
+            init()
             if (quoteId == data.results.size - 1) {
                 btnNext.isClickable = false
             } else {

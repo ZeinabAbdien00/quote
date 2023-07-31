@@ -7,10 +7,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "Chats")
 data class SavedQuoteLocalDataModel(
 
-    @PrimaryKey(autoGenerate = true)
-    val quoteId: Int = 0,
-
     @ColumnInfo(name = "quote")
+    @PrimaryKey(autoGenerate = false)
     val quote: String,
 
     @ColumnInfo(name = "author")

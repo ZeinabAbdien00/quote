@@ -28,16 +28,14 @@ class SavedQuotesFragment : Fragment() {
         binding = FragmentSavedQuotesBinding.inflate(layoutInflater)
         repository = BaseRepository()
         viewModel = SavedQuoteViewModel(repository)
-        Log.d("suz", "1")
-
+        viewModel.getSavedQuotes()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         observation()
-
+        viewModel.getSavedQuotes()
     }
 
 
@@ -46,14 +44,12 @@ class SavedQuotesFragment : Fragment() {
         viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 setupRecyclerView(it)
-
             }
         })
     }
 
     private fun setupRecyclerView(savedQuoteList: List<SavedQuoteLocalDataModel>) {
         binding.rvSavedQuotes.apply {
-
             val savedData = savedQuoteList as ArrayList<SavedQuoteLocalDataModel>
             savedAdapter =
                 SaveQuoteRVAdapter(savedData)
@@ -65,5 +61,4 @@ class SavedQuotesFragment : Fragment() {
             adapter = savedAdapter
         }
     }
-
 }

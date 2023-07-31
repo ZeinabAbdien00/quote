@@ -21,10 +21,8 @@ class SavedQuoteViewModel(
     }
 
     private suspend fun savedQuotes() {
-
         _savedQuotes.postValue(savedRepository.getSavedQuotes())
         _savedQuotes.value = savedRepository.getSavedQuotes()
-
     }
 
     suspend fun deleteQuote(quote: String, author: String) {
