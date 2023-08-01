@@ -1,9 +1,12 @@
 package com.iti.android_4.ui
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
@@ -33,6 +36,25 @@ class MainActivity : AppCompatActivity() {
         swipeBottomNavigationWhenViewPagerChanged()
         swipeViewPagerWhenBottomNavigationChanged()
 
+
+        val rootView = findViewById<View>(android.R.id.content)
+        rootView.viewTreeObserver.addOnGlobalLayoutListener {
+            val heightDiff = rootView.rootView.height - rootView.height
+            if (heightDiff > dpToPx(this@MainActivity)) { // 200dp threshold
+                // Keyboard is showing, hide bottom navigation
+                binding.navigationView.visibility = View.GONE
+            } else {
+                // Keyboard is not showing, show bottom navigation
+                binding.navigationView.visibility = View.VISIBLE
+            }
+        }
+    }
+
+
+    private fun dpToPx(context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, 200f, context.resources.displayMetrics
+        ).toInt()
     }
 
     private fun swipeViewPagerWhenBottomNavigationChanged() {
