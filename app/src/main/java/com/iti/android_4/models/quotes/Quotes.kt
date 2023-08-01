@@ -1,4 +1,4 @@
-package com.iti.android_4.models
+package com.iti.android_4.models.quotes
 
 import androidx.annotation.Keep
 

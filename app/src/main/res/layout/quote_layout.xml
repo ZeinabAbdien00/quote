@@ -93,7 +93,8 @@
         app:borderWidth="0dp"
         app:layout_constraintEnd_toStartOf="@id/btn_copy"
         app:layout_constraintStart_toEndOf="@id/btn_previous"
-        app:layout_constraintTop_toTopOf="@id/btn_previous" />
+        app:layout_constraintTop_toTopOf="@id/btn_previous"
+        app:tint="@color/base" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_copy"

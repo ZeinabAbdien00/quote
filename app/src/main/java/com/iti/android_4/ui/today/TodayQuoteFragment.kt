@@ -3,7 +3,6 @@ package com.iti.android_4.ui.today
 import android.content.*
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.iti.android_4.R
 import com.iti.android_4.databinding.FragmentTodayQuoteBinding
-import com.iti.android_4.models.Quotes
+import com.iti.android_4.models.quotes.Quotes
 import com.iti.android_4.models.saved.SavedQuoteLocalDataModel
 import com.iti.android_4.ui.BaseRepository
 import kotlinx.coroutines.CoroutineScope
@@ -26,23 +25,18 @@ class TodayQuoteFragment : Fragment() {
     private lateinit var viewModel: TodayQuotesViewModel
     private lateinit var repository: BaseRepository
     private var toggle: Boolean = true
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
 
     private lateinit var data: Quotes
     private lateinit var savedQuotes: List<SavedQuoteLocalDataModel>
-    var quoteId = 1
+    var quoteId = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentTodayQuoteBinding.inflate(layoutInflater)
         repository = BaseRepository()
         viewModel = TodayQuotesViewModel(repository)
-        sharedPreferences = activity!!.getSharedPreferences("MyShared", Context.MODE_PRIVATE)
-        editor = sharedPreferences.edit()
         return binding.root
     }
 
@@ -87,8 +81,8 @@ class TodayQuoteFragment : Fragment() {
 
         viewModel.quotes.observe(viewLifecycleOwner, Observer { response ->
             data = response
-            initialData()
-            onClickToSaveFavorite(response)
+            setData(quoteId)
+            onClickToSaveFavorite()
         })
         viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -98,17 +92,18 @@ class TodayQuoteFragment : Fragment() {
         })
     }
 
-    private fun initialData() {
+    private fun setData(quoteId: Int) {
         binding.todayLayout.tvQuoteContent.text =
-            data.results[0].content
+            data.results[quoteId].content
         binding.todayLayout.tvAuthor.text =
-            data.results[0].author
+            data.results[quoteId].author
         binding.todayLayout.tvDate.text =
-            data.results[0].dateModified
+            data.results[quoteId].dateAdded
+        if (this.quoteId ==0 ) this.quoteId++
         init()
     }
 
-    private fun onClickToSaveFavorite(response: Quotes?) {
+    private fun onClickToSaveFavorite() {
 
         binding.todayLayout.apply {
             btnFavorite.setOnClickListener {
@@ -133,18 +128,13 @@ class TodayQuoteFragment : Fragment() {
     }
 
     private fun addToFav(): Boolean {
-
         binding.todayLayout.apply {
-
             val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
             drawable?.setColorFilter(
                 ContextCompat.getColor(requireContext(), R.color.base),
                 PorterDuff.Mode.SRC_IN
             )
             binding.todayLayout.btnFavorite.setImageDrawable(drawable)
-
-
-
             CoroutineScope(Dispatchers.Main).launch {
                 viewModel.newQuote(
                     SavedQuoteLocalDataModel(
@@ -154,8 +144,6 @@ class TodayQuoteFragment : Fragment() {
                     )
                 )
             }
-            editor.putString("favorite", tvQuoteContent.text.toString())
-            editor.apply()
 
             Toast.makeText(requireContext(), "Saved To Favorite", Toast.LENGTH_SHORT).show()
             return !toggle
@@ -206,9 +194,7 @@ class TodayQuoteFragment : Fragment() {
 
     private fun previousQuote() {
         binding.todayLayout.apply {
-            tvQuoteContent.text = data.results[quoteId].content
-            tvAuthor.text = data.results[quoteId].author
-            tvDate.text = data.results[quoteId].dateModified
+            setData(quoteId)
             init()
             if (quoteId == 0) {
                 btnPrevious.isClickable = false
@@ -216,14 +202,12 @@ class TodayQuoteFragment : Fragment() {
                 btnNext.isClickable = true
                 quoteId--
             }
-
         }
     }
 
     private fun nextQuote() {
         binding.todayLayout.apply {
-            tvQuoteContent.text = data.results[quoteId].content
-            tvAuthor.text = data.results[quoteId].author
+            setData(quoteId)
             init()
             if (quoteId == data.results.size - 1) {
                 btnNext.isClickable = false

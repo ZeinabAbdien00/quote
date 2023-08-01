@@ -1,11 +1,10 @@
 package com.iti.android_4.ui.today
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti.android_4.models.Quotes
+import com.iti.android_4.models.quotes.Quotes
 import com.iti.android_4.models.saved.SavedQuoteLocalDataModel
 import com.iti.android_4.ui.BaseRepository
 import kotlinx.coroutines.launch
