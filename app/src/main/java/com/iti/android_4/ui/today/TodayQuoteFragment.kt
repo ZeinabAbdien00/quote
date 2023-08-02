@@ -99,7 +99,7 @@ class TodayQuoteFragment : Fragment() {
             data.results[quoteId].author
         binding.todayLayout.tvDate.text =
             data.results[quoteId].dateAdded
-        if (this.quoteId ==0 ) this.quoteId++
+        if (this.quoteId == 0) this.quoteId++
         init()
     }
 

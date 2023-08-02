@@ -9,12 +9,10 @@ import com.iti.android_4.models.saved.SavedQuoteLocalDataModel
 
 @Database(entities = [SavedQuoteLocalDataModel::class], version = 1)
 abstract class SavedQuotesDatabase : RoomDatabase() {
-
     abstract fun savedDao(): SavedQuoteDao
 
     companion object {
         private var instance: SavedQuotesDatabase? = null
-
         private const val DB_NAME = "Rooms"
 
         fun getInstance(context: Context): SavedQuotesDatabase {

@@ -17,18 +17,18 @@ open class BaseRepository {
 
     fun getRetrofitQuotes() =
         getQuotes()
-    fun getRetrofitSearchQuotes(text : String) =
+
+    fun getRetrofitSearchQuotes(text: String) =
         getSearchQuotes(text)
 
     private fun getQuotes() =
         retrofitObject.getQuotes()
 
-    private fun getSearchQuotes(text : String) : Call<SearchQuotes> {
+    private fun getSearchQuotes(text: String): Call<SearchQuotes> {
         Log.d("nop", retrofitObject.getSearchQuotes(text).toString())
-       return retrofitObject.getSearchQuotes(text)
+        return retrofitObject.getSearchQuotes(text)
 
     }
-
 
     suspend fun insertNewQuotes(newQuote: SavedQuoteLocalDataModel) =
         daoObject.insertNewQuote(saveNewQuote = newQuote)

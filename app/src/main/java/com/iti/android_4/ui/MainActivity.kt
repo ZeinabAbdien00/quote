@@ -41,10 +41,8 @@ class MainActivity : AppCompatActivity() {
         rootView.viewTreeObserver.addOnGlobalLayoutListener {
             val heightDiff = rootView.rootView.height - rootView.height
             if (heightDiff > dpToPx(this@MainActivity)) { // 200dp threshold
-                // Keyboard is showing, hide bottom navigation
                 binding.navigationView.visibility = View.GONE
             } else {
-                // Keyboard is not showing, show bottom navigation
                 binding.navigationView.visibility = View.VISIBLE
             }
         }
@@ -113,7 +111,6 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(bottomNavigationView, navHostFragment.navController)
 
         val colorStateList = ColorStateList.valueOf(resources.getColor(R.color.white))
-//        bottomNavigationView.itemIconTintList = colorStateList
 
         bottomNavigationView.itemIconTintList = ColorStateList(
             arrayOf(
@@ -122,7 +119,6 @@ class MainActivity : AppCompatActivity() {
             ),
             intArrayOf(colorStateList.defaultColor, ContextCompat.getColor(this, R.color.gray))
         )
-
 
     }
 

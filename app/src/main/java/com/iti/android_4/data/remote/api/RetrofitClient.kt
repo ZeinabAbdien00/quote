@@ -10,7 +10,6 @@ object RetrofitClient {
         Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(
             GsonConverterFactory.create()
         ).build()
-
     fun apiServiceInstance(): QuoteApi = instance().create(QuoteApi::class.java)
 
 }
