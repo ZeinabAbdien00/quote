@@ -1,8 +1,18 @@
 package com.iti.android_4.ui.today
 
-import android.content.*
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Intent
 import android.graphics.PorterDuff
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +20,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.iti.android_4.QuoteApplication
 import com.iti.android_4.R
+import com.iti.android_4.data.service.AlarmReceiver
 import com.iti.android_4.databinding.FragmentTodayQuoteBinding
 import com.iti.android_4.models.quotes.Quotes
 import com.iti.android_4.models.saved.SavedQuoteLocalDataModel
@@ -18,6 +30,12 @@ import com.iti.android_4.ui.BaseRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
+import java.util.*
 
 class TodayQuoteFragment : Fragment() {
 
@@ -29,6 +47,10 @@ class TodayQuoteFragment : Fragment() {
     private lateinit var data: Quotes
     private lateinit var savedQuotes: List<SavedQuoteLocalDataModel>
     var quoteId = 0
+
+    private lateinit var alarmManager: AlarmManager
+    private lateinit var pendingIntent: PendingIntent
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +65,69 @@ class TodayQuoteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observation()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name: CharSequence = "Remainder channel experimental"
+            val description = "Please wake up! Do study"
+            val importance: Int = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(AlarmReceiver.CHANNEL_ID, name, importance).apply {
+                setDescription(description)
+            }
+            val notificationManager =
+                context!!.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+            notificationManager.createNotificationChannel(channel)
+        }
+
+    }
+
+
+    private fun setAlarm() {
+        try {
+            alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(requireContext(), AlarmReceiver::class.java)
+            intent.putExtra("body", binding.todayLayout.tvQuoteContent.text.toString())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                pendingIntent = PendingIntent.getBroadcast(
+                    QuoteApplication.context,
+                    AlarmReceiver.NOTIFICATION_ID,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            } else {
+                Toast.makeText(requireContext(), "sdkVersionMsg", Toast.LENGTH_SHORT).show()
+            }
+
+            val alarmTime = LocalTime.of(18, 15)
+            var now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)
+            if (now.toLocalTime().isAfter(alarmTime)) {
+                now = now.plusDays(1)
+            }
+
+            now = now.withHour(alarmTime.hour)
+                .withMinute(alarmTime.minute)
+
+            val utc = now.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC)
+                .toLocalDateTime()
+            val triggerAtMillis = utc.atZone(ZoneOffset.UTC)!!.toInstant()!!.toEpochMilli()
+
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP, triggerAtMillis,
+                pendingIntent
+            )
+
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+
+
+        } catch (e: Exception) {
+
+            Toast.makeText(requireContext(), e.toString(), Toast.LENGTH_SHORT).show()
+            Log.d("insindeSet", e.toString())
+
+        }
+
     }
 
     private fun init() {
@@ -76,12 +161,15 @@ class TodayQuoteFragment : Fragment() {
 
     private fun observation() {
 
+
         viewModel.getQuotes()
         viewModel.getSavedQuotes()
+        createNotificationChannel()
 
         viewModel.quotes.observe(viewLifecycleOwner, Observer { response ->
             data = response
             setData(quoteId)
+            setAlarm()
             onClickToSaveFavorite()
         })
         viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {
