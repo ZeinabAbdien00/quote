@@ -19,8 +19,6 @@ import java.util.*
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context?, intent: Intent?) {
-        Log.d("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL", "hours.toString()")
-
 
         val calendar = Calendar.getInstance()
         val hours = calendar.get(Calendar.HOUR_OF_DAY)

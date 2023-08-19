@@ -38,7 +38,6 @@ class SavedQuotesFragment : Fragment() {
         viewModel.getSavedQuotes()
     }
 
-
     private fun observation() {
         viewModel.getSavedQuotes()
         viewModel.savedQuotes.observe(viewLifecycleOwner, Observer {

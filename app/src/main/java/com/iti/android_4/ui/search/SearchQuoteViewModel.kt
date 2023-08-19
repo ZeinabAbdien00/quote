@@ -31,12 +31,10 @@ class SearchQuoteViewModel(
             ) {
                 searchQuotes.postValue(response.body())
                 searchQuotes.value = response.body()
-                Log.d("1542001", searchQuotes.value.toString())
             }
 
             override fun onFailure(call: Call<SearchQuotes>, t: Throwable) {
                 Log.d("suz", "onFailure: ${t.message}")
-                Log.d("suzan", "fail")
             }
         })
     }
