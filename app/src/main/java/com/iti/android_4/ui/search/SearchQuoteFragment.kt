@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iti.android_4.adapter.search_quote.SearchQuoteRVAdapter
 import com.iti.android_4.databinding.FragmentSearchBinding
+import com.iti.android_4.models.quotes.Result
 import com.iti.android_4.models.search.SearchQuotes
 import com.iti.android_4.ui.BaseRepository
-import com.iti.android_4.models.quotes.Result
 
 
 class SearchQuoteFragment : Fragment() {

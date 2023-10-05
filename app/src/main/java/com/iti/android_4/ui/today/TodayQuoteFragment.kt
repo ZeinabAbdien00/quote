@@ -124,7 +124,6 @@ class TodayQuoteFragment : Fragment() {
         } catch (e: Exception) {
 
             Toast.makeText(requireContext(), e.toString(), Toast.LENGTH_SHORT).show()
-            Log.d("insindeSet", e.toString())
 
         }
 

@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.iti.android_4.R
-import com.iti.android_4.adapter.save_quote.SaveQuoteRVAdapter
 import com.iti.android_4.databinding.SaveCardBinding
 import com.iti.android_4.models.quotes.Result
 
